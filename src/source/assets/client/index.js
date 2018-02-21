@@ -1,5 +1,8 @@
 $(function() {
-  let socket = io('https://converse2.herokuapp.com/');
+  $("#messages").append($("<li>").text("Connected to JQuery"))
+  let socket = io();
+    $("#messages").append($("<li>").text("Connected to Socket.io"));
+
   $("form").submit(function() {
     console.log($("#m").val())
     socket.emit("message", $("#m").val());

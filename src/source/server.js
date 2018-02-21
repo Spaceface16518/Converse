@@ -10,6 +10,10 @@ app.get("/", function(req, res) {
   res.sendFile(__dirname + "/index.html");
 });
 
+app.get("/index/", (req, res) => {
+  res.sendFile(__dirname + '/index.js')
+})
+
 io.on("connection", socket => {
   //  socket.join('admin') // join default chat
   //socket.emit("load", { chat: modules.loadChat() }); // Load chat history on init

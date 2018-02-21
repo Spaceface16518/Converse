@@ -1,7 +1,10 @@
 {
   "name": "converse2",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "description": "A web chat app",
+  "repository": {
+    "heroku": "https://git.heroku.com/converse2.git"
+  },
   "main": "lib/server.js",
   "engines": {
     "node": "9.4.0",
