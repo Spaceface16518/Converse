@@ -28,6 +28,7 @@
     "gulp-replace-name": "^1.0.1",
     "gulp-uglify": "^3.0.0",
     "http": "0.0.0",
+    "randomcolor": "^0.5.3",
     "socket.io": "^2.0.4"
   }
 }
