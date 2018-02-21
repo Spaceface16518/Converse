@@ -10,7 +10,7 @@
       height: 20%
     }
 
-    app {
+    #app {
       height: 100%;
       width: 100%
     }
@@ -18,47 +18,58 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
   <script>
     $(function () {
-      console.log('Connected to JQuery')
-      let socket = io(window.location.host);
-      console.log(`Connected to Socket.io on ${window.location.host}`)
-      let assignedColor;
-      socket.on('assign color', (color) => {
-        assignedColor = color
-      })
-      $("form").submit(function () {
+          console.log('Connected to JQuery')
+          let socket = io(window.location.host);
+          console.log(`Connected to Socket.io on ${window.location.host}`)
+          let assignedColor;
+          socket.on('assign color', (color) => {
+            assignedColor = color
+          })
+          $("form").submit(function () {
 
-        socket.emit("message", {
-          msg: $("#m").val(),
-          color: assignedColor
-        });
-        console.log(`message sent: ${$("#m").val()}`)
-        $("#m").val("");
-        return false;
-      });
+            socket.emit("message", {
+              msg: $("#m").val(),
+              color: assignedColor
+            });
+            console.log(`message sent: ${$("#m").val()}`)
+            $("#m").val("");
+            return false;
+          });
 
-      socket.on("message", function (data) {
-        console.log(`message recieved: ${data.msg}`)
+          socket.on("message", function (data) {
+            console.log(`message recieved: ${data.msg}`)
 
-        function randNum() {
-          let num = Math.floor(Math.random() * 1000)
-          socket.emit('new location', num)
-          return num
+            function randNum() {
+              let num = Math.floor(Math.random() * 1000)
+              socket.emit('new location', num)
+              return num
 
 
+            }
+            $("#messages").append($("<li>").css("background", data.color).attr('id', randNum()).text(data.msg));
+          });
+          socket.on('load', () => {
+            console.log('Socket.io connection to server confirmed')
+          })
+          socket.on('scroll', id => {
+            scrollTo(getOffset(id).left, getOffset(id).left)
+          });
+
+          function getOffset(el) {
+            var _x = 0;
+            var _y = 0;
+            while (el && !isNaN(el.offsetLeft) && !isNaN(el.offsetTop)) {
+              _x
+                += el.offsetLeft - el.scrollLeft;
+              _y += el.offsetTop - el.scrollTop;
+              el = el.offsetParent;
+            }
+            return {
+              top: _y,
+              left: _x
+            };
+          }
         }
-        $("#messages").append($("<li>").css("background", data.color).attr('id', randNum()).text(data.msg));
-      });
-      socket.on('load', () => {
-        console.log('Socket.io connection to server confirmed')
-      })
-      socket.on('scroll', id => {
-        target_offset = $("#" + id).offset(), target_top = target_offset.top;
-        $('html, body').animate({
-            scrollTop: target_top
-          },
-          800);
-      })
-    });
   </script>
 
   <script src="socket.io/socket.io.js" type="text/javascript"></script>
@@ -66,7 +77,7 @@
 </head>
 
 <body>
-  <div class="w3-container" id="app">
+  <div class="" id="app">
     <div class="w3-container w3-margin-bottom">
       <ul id="messages" class="w3-large w3-ul queue"></ul>
     </div>
