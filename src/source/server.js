@@ -2,7 +2,6 @@
 var app = require("express")();
 var server = require("http").Server(app);
 var io = require("socket.io")(server);
-var randomColor = require("randomcolor")();
 let registry = [];
 let port = process.env.PORT || 8080;
 server.listen(port);
@@ -16,10 +15,8 @@ app.get("/index/", (req, res) => {
 });
 
 io.on("connection", socket => {
-  socket.emit("load");
-  socket.on("request color", () => {
-    socket.emit("assign color", randomColor);
-  });
+  socket.emit("load"); // Onload functions
+  socket.emit("assign color", require('randomcolor')()); // Assign user color
 
   //  socket.join('admin') // join default chat
   //socket.emit("load", { chat: modules.loadChat() }); // Load chat history on init

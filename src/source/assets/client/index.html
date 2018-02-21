@@ -61,17 +61,19 @@
         assignedColor = color
       })
       $("form").submit(function () {
-        console.log(`message sent: ${$("#m").val()}`)
+
         socket.emit("message", {
           msg: $("#m").val(),
           color: assignedColor
         });
+        console.log(`message sent: ${$("#m").val()}`)
         $("#m").val("");
         return false;
       });
+
       socket.on("message", function (data) {
         console.log(`message recieved: ${data.msg}`)
-        $("#messages").append($("<li>").css("background", data.color).text(msg));
+        $("#messages").append($("<li>").css("background", data.color).text(data.msg));
       });
       socket.on('load', () => {
         console.log('Socket.io connection to server confirmed')
