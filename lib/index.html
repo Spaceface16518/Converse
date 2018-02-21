@@ -54,8 +54,8 @@
   <script>
     $(function () {
       console.log('Connected to JQuery')
-      let socket = io("localhost:8080");
-      console.log('Connected to socket.io')
+      let socket = io(window.location.host);
+      console.log(`Connected to Socket.io on ${window.location.host}`)
       let assignedColor;
       socket.on('assign color', (color) => {
         assignedColor = color
