@@ -1,0 +1,21 @@
+{
+  "name": "Converse",
+  "description": "A web based chat app using socketIO, express and mongoDB",
+  "scripts": {
+  },
+  "env": {
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
