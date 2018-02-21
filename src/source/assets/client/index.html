@@ -50,13 +50,12 @@
       background: #eee;
     }
   </style>
-<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
   <script>
-  $(function () {
+    $(function () {
       console.log('Connected to JQuery')
       let socket = io();
-console.log('Connected to socket.io')
+      console.log('Connected to socket.io')
       $("form").submit(function () {
         console.log($("#m").val())
         socket.emit("message", $("#m").val());
@@ -73,7 +72,7 @@ console.log('Connected to socket.io')
     });
   </script>
 
-  <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
+  <script src="https://cdn.socket.io/socket.io-1.0.0.js" type="text/javascript"></script>
 </head>
 
 <body>
