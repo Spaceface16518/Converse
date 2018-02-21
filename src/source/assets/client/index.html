@@ -54,7 +54,7 @@
   <script>
     $(function () {
       console.log('Connected to JQuery')
-      let socket = io("localhost:8080");
+      let socket = io("https://converse2.herokuapp.com/");
       console.log('Connected to socket.io')
       $("form").submit(function () {
         console.log(`message sent: ${$("#m").val()}`)
