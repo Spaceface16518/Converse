@@ -5,14 +5,9 @@
   <title>Converse</title>
   <style>
     form {
-      position: sticky;
+      position: fixed;
       bottom: 0%;
-      height: 20%
-    }
-
-    #app {
-      height: 100%;
-      width: 100%
+      height: auto
     }
   </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
@@ -40,7 +35,7 @@
         console.log(`message recieved: ${data.msg}`)
 
         function randNum() {
-          let num = Math.floor(Math.random() * 1000)
+          let num = Math.random().toString(36).substr(2)
           console.log(`id: ${num}`)
           socket.emit('new id', num)
           return num
@@ -65,23 +60,19 @@
 </head>
 
 <body>
-  <div class="" id="app">
-    <div class="w3-container w3-margin-bottom">
+  <div class="w3-rest" id="app">
+    <div class="w3-rest w3-container w3-margin-bottom">
       <ul id="messages" class="w3-large w3-ul queue"></ul>
     </div>
-
-
-
-    <form action="" class="w3-bar w3-rest w3-grey" autocomplete="off">
-
-
-      <input class="w3-input w3-rightbar w3-border-bottom w3-border-blue" placeholder="Converse..." id="m">
-      <button type="submit" class="w3-button w3-blue w3-border">Send</button>
-
+    <form action="" class=" w3-rest w3-bar w3-rest" autocomplete="off">
+      <div class="w3-container w3-rest">
+        <input type="text" class="w3-input w3-leftbar w3-border-bottom w3-border-blue w3-rest" "Converse..." id="m">
+      </div>
+      <div class="w3-container w3-quarter">
+        <button type="submit" class="w3-button w3-blue w3-border w3-cell w3-rest w3-hide-large">Send</button>
+      </div>
     </form>
-
   </div>
 </body>
-
 
 </html>
