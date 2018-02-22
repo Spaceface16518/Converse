@@ -1,6 +1,6 @@
 {
   "name": "converse2",
-  "version": "2.3.2",
+  "version": "2.4.1",
   "description": "A web chat app",
   "repository": {
     "heroku": "https://git.heroku.com/converse2.git"
