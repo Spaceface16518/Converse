@@ -23,7 +23,7 @@ io.on("connection", socket => {
   socket.on("message", data => {
     io.emit("message", data); // When recive message from client, broadcast that message to all clients (including sender)
   });
-  socket.on('new id', id => {
+  socket.on('new location', id => {
     io.emit('scroll', id)
   })
 });
