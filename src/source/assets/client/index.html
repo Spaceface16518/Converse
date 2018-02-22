@@ -57,6 +57,9 @@
         document.getElementById(id).scrollIntoView()
 
       });
+      $('#m').on('focus', function () {
+        document.body.scrollTop = $(this).offset().top;
+      });
     })
   </script>
 
