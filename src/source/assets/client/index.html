@@ -21,16 +21,16 @@
       console.log('Connected to JQuery')
       let socket = io(window.location.host);
       console.log(`Connected to Socket.io on ${window.location.host}`)
-      let assignedColor;
-      socket.on('assign color', (color) => {
-        assignedColor = color
-      })
+      let loadData = {}
+
       $('.msgq').css('margin-bottom', $('form').height())
       $("form").submit(function () {
 
         socket.emit("message", {
           msg: $("#m").val(),
-          color: assignedColor
+          chat: loadData.chat,
+          color: assignedColor,
+          time: new Date()
         });
         console.log(`message sent: ${$("#m").val()}`)
         $("#m").val("");
@@ -39,35 +39,33 @@
 
       socket.on("message", function (data) {
         console.log(`message recieved: ${data.msg}`)
-
         function randNum() {
           let num = Math.random().toString(36).substr(2)
           console.log(`id: ${num}`)
           socket.emit('new id', num)
           return num
-
         }
         $("#messages").append($("<li>").css("background", data.color).attr('id', randNum()).text(data.msg));
       });
-      socket.on('load', () => {
+
+      socket.on('load', (loadData) => {
         console.log('Socket.io connection to server confirmed')
+        loadData = loadData; // internal data = external parameter
+        let assignedColor = loadData.color;
       })
+
       socket.on('scroll', id => {
-
         document.getElementById(id).scrollIntoView()
-
       });
+
       $('#m').on('focus', function () {
-        document.body.scrollTop = $(this).offset().top;
+        document.getElementById(m).scrollIntoView()
       });
-        $('input').bind('focus', function () {
-          $(window).scrollTop(10);
-          var keyboard_shown = $(window).scrollTop() > 0;
-          $(window).scrollTop(0);
 
-          $('#test').append(keyboard_shown ? 'keyboard ' : 'nokeyboard ');
-        });
-
+      $('input').bind('focus');
+      socket.on('force disconnect', () => {
+        socket.disconnect()
+      })
     })
   </script>
 
