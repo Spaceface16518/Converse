@@ -2,6 +2,11 @@
 <html>
 
 <head>
+  <meta charset="UTF-8">
+  <meta name="description" content="A web-based chat app using socketIO, express and mongoDB">
+  <meta name="keywords" content="Converse, web, chat">
+  <meta name="author" content="Amrit Rathie">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Converse</title>
   <style>
     form {
@@ -16,15 +21,16 @@
       console.log('Connected to JQuery')
       let socket = io(window.location.host);
       console.log(`Connected to Socket.io on ${window.location.host}`)
-      let assignedColor;
-      socket.on('assign color', (color) => {
-        assignedColor = color
-      })
+      let loadData = {}
+
+      $('.msgq').css('margin-bottom', $('form').height())
       $("form").submit(function () {
 
         socket.emit("message", {
           msg: $("#m").val(),
-          color: assignedColor
+          chat: loadData.chat,
+          color: assignedColor,
+          time: new Date()
         });
         console.log(`message sent: ${$("#m").val()}`)
         $("#m").val("");
@@ -33,25 +39,33 @@
 
       socket.on("message", function (data) {
         console.log(`message recieved: ${data.msg}`)
-
         function randNum() {
           let num = Math.random().toString(36).substr(2)
           console.log(`id: ${num}`)
           socket.emit('new id', num)
           return num
-
-
         }
         $("#messages").append($("<li>").css("background", data.color).attr('id', randNum()).text(data.msg));
       });
-      socket.on('load', () => {
+
+      socket.on('load', (loadData) => {
         console.log('Socket.io connection to server confirmed')
+        loadData = loadData; // internal data = external parameter
+        let assignedColor = loadData.color;
       })
+
       socket.on('scroll', id => {
-
         document.getElementById(id).scrollIntoView()
-
       });
+
+      $('#m').on('focus', function () {
+        document.getElementById(m).scrollIntoView()
+      });
+
+      $('input').bind('focus');
+      socket.on('force disconnect', () => {
+        socket.disconnect()
+      })
     })
   </script>
 
@@ -61,10 +75,10 @@
 
 <body>
   <div class="w3-rest" id="app">
-    <div class="w3-rest w3-container w3-margin-bottom">
+    <div class="w3-rest w3-container msgq">
       <ul id="messages" class="w3-large w3-ul queue"></ul>
     </div>
-    <form action="" class=" w3-rest w3-bar w3-rest" autocomplete="off">
+    <form action="" class=" w3-rest w3-bar w3-rest w3-white" autocomplete="off">
       <div class="w3-container w3-rest">
         <input type="text" class="w3-input w3-leftbar w3-border-bottom w3-border-blue w3-rest" placeholder="Converse..." id="m">
       </div>
