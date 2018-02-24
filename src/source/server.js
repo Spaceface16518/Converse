@@ -16,6 +16,8 @@ app.get("/chat", (req, res) => {
   loadData.chat = req.query.chat;
   loadData.color = require("randomcolor")();
 });
+app.get("/favicon", (req, res) => {
+  res.sendFile(__dirname + "/custom.png");
 });
 
 io.on("connection", socket => {
