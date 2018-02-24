@@ -18,6 +18,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
   <script>
     $(function () {
+
+
       console.log('Connected to JQuery')
       localStorage.debug = '*'
       let socket = io(window.location.host);
@@ -28,10 +30,13 @@
       socket.on('load', data => {
         console.log('Socket.io connection to server confirmed')
         loadData = data;
-        console.log(loadData)
+        console.info(loadData)
+        $('#header-usr').text(`Display Name: ${loadData.usr}`)
+        $('#header-chat').text(`Chat: ${loadData.chat}`)
       })
 
       $('.msgq').css('margin-bottom', $('form').height())
+
       $("form").submit(function () {
         let obj = {
           id: Math.random().toString(36).slice(2),
@@ -68,7 +73,8 @@
           socket.emit('new id', num)
           return num
         }
-        $("#messages").append($("<li>").css("background-color", data.color).attr('id', data.id).addClass('w3-margin-bottom w3-card-2').text(
+        $("#messages").append($("<li>").css("background-color", data.color).attr('id', data.id).addClass(
+          'w3-margin w3-card-2').text(
           `${data.usr}: ${data.msg}`));
         document.getElementById(data.id).scrollIntoView()
         //}
@@ -92,16 +98,21 @@
 </head>
 
 <body class="w3-blue-grey">
-  <div class="w3-container">
+  <div class="w3-container w3-margin">
+    <header class="w3-container w3-blue w3-rest w3-center w3-card">
+      <p class="">Converse</p>
+      <p id="header-chat" class=""></p>
+      <p id="header-usr" class=""></p>
+    </header>
     <div class="w3-rest" id="app">
       <div class="w3-rest w3-container msgq">
         <ul id="messages" class="w3-large w3-ul queue w3-container"></ul>
       </div>
-      <form action="" class=" w3-rest w3-bar w3-rest w3-blue-grey" autocomplete="off">
+      <form action="" class=" w3-rest w3-bar" autocomplete="off">
         <div class="w3-container w3-rest">
-          <input type="text" class="w3-input w3-leftbar w3-border-bottom w3-border-blue w3-rest" placeholder="Converse..." id="m">
+          <input type="text" class="w3-input w3-leftbar w3-border-bottom w3-border-blue" placeholder="Converse..." id="m">
         </div>
-        <div class="w3-container w3-quarter">
+        <div class="w3-container w3-rest">
           <button type="submit" class="w3-button w3-blue w3-border w3-cell w3-rest w3-hide-large">Send</button>
         </div>
       </form>

@@ -18,7 +18,8 @@
         let str = Math.random().toString(36).slice(2).slice(0, 6)
         $('#chat').val(str)
         console.log(str)
-      })
+      });
+
       $('form').submit(() => {
         let currentLocation = window.location;
         let queryParams = processInput()
@@ -55,6 +56,13 @@
 </head>
 
 <body>
+  <header class="w3-container">
+    <div class="w3-container w3-card w3-blue w3-margin w3-center">
+      <h1 id="title">Welcome to Converse</h1>
+      <h3>Free, unblocked web chatting for all!</h3>
+      <p>Enter a display name and a chat identifier to begin</p>
+    </div>
+  </header>
   <div id="app" class="w3-container">
     <div class="w3-container">
       <form action="" class="w3-form w3-card w3-white w3-margin">
