@@ -2,7 +2,12 @@
 <html>
 
 <head>
-  <title>Converse</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="A web-based chat app using socketIO, express and mongoDB">
+  <meta name="keywords" content="Converse, web, chat">
+  <meta name="author" content="Amrit Rathie">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Converse | unblocked web chat!</title>
   <style>
     form {
       position: fixed;
@@ -14,57 +19,84 @@
   <script>
     $(function () {
       console.log('Connected to JQuery')
+      localStorage.debug = '*'
       let socket = io(window.location.host);
+      $('input').bind('focus');
       console.log(`Connected to Socket.io on ${window.location.host}`)
-      let assignedColor;
-      socket.on('assign color', (color) => {
-        assignedColor = color
-      })
-      $("form").submit(function () {
+      let loadData = {}
 
-        socket.emit("message", {
+      socket.on('load', data => {
+        console.log('Socket.io connection to server confirmed')
+        loadData = data;
+        console.log(loadData)
+      })
+
+      $('.msgq').css('margin-bottom', $('form').height())
+      $("form").submit(function () {
+        let obj = {
+          id: Math.random().toString(36).slice(2),
           msg: $("#m").val(),
-          color: assignedColor
-        });
-        console.log(`message sent: ${$("#m").val()}`)
+          usr: function (a) {
+            if (a == "") return {};
+            var b = {};
+            for (var i = 0; i < a.length; ++i) {
+              var p = a[i].split('=', 2);
+              if (p.length == 1)
+                b[p[0]] = "";
+              else
+                b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+            }
+            return b.usr;
+          }(window.location.search.substr(1).split('&')),
+          chat: loadData.chat,
+          color: loadData.color,
+          time: new Date()
+        };
+        socket.emit("message", obj)
+        console.log(`message sent: ${obj}\ncolor: ${obj.color}`)
         $("#m").val("");
         return false;
       });
 
       socket.on("message", function (data) {
-        console.log(`message recieved: ${data.msg}`)
+        //if (data.msg) {
+        console.log(`message recieved: ${data}`)
 
         function randNum() {
           let num = Math.random().toString(36).substr(2)
           console.log(`id: ${num}`)
           socket.emit('new id', num)
           return num
-
-
         }
-        $("#messages").append($("<li>").css("background", data.color).attr('id', randNum()).text(data.msg));
+        $("#messages").append($("<li>").css("background-color", data.color).attr('id', data.id).text(
+          `${data.usr}: ${data.msg}`));
+        document.getElementById(data.id).scrollIntoView()
+        //}
       });
-      socket.on('load', () => {
-        console.log('Socket.io connection to server confirmed')
+
+
+
+      $('#m').on('focus', function () {
+        document.getElementById('m').scrollIntoView()
+      });
+
+      socket.on('force disconnect', () => {
+        socket.disconnect()
       })
-      socket.on('scroll', id => {
-
-        document.getElementById(id).scrollIntoView()
-
-      });
     })
   </script>
 
   <script src="socket.io/socket.io.js" type="text/javascript"></script>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="shortcut icon" href="favicon" type="image/x-icon">
 </head>
 
 <body>
   <div class="w3-rest" id="app">
-    <div class="w3-rest w3-container w3-margin-bottom">
+    <div class="w3-rest w3-container msgq">
       <ul id="messages" class="w3-large w3-ul queue"></ul>
     </div>
-    <form action="" class=" w3-rest w3-bar w3-rest" autocomplete="off">
+    <form action="" class=" w3-rest w3-bar w3-rest w3-white" autocomplete="off">
       <div class="w3-container w3-rest">
         <input type="text" class="w3-input w3-leftbar w3-border-bottom w3-border-blue w3-rest" placeholder="Converse..." id="m">
       </div>
