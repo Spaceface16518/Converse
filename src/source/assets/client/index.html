@@ -19,50 +19,67 @@
   <script>
     $(function () {
       console.log('Connected to JQuery')
+      localStorage.debug = '*'
       let socket = io(window.location.host);
+      $('input').bind('focus');
       console.log(`Connected to Socket.io on ${window.location.host}`)
       let loadData = {}
 
+      socket.on('load', data => {
+        console.log('Socket.io connection to server confirmed')
+        loadData = data;
+        console.log(loadData)
+      })
+
       $('.msgq').css('margin-bottom', $('form').height())
       $("form").submit(function () {
-
-        socket.emit("message", {
+        let obj = {
+          id: Math.random().toString(36).slice(2),
           msg: $("#m").val(),
+          usr: function (a) {
+            if (a == "") return {};
+            var b = {};
+            for (var i = 0; i < a.length; ++i) {
+              var p = a[i].split('=', 2);
+              if (p.length == 1)
+                b[p[0]] = "";
+              else
+                b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+            }
+            return b.usr;
+          }(window.location.search.substr(1).split('&')),
           chat: loadData.chat,
-          color: assignedColor,
+          color: loadData.color,
           time: new Date()
-        });
-        console.log(`message sent: ${$("#m").val()}`)
+        };
+        socket.emit("message", obj)
+        console.log(`message sent: ${obj}\ncolor: ${obj.color}`)
         $("#m").val("");
         return false;
       });
 
       socket.on("message", function (data) {
-        console.log(`message recieved: ${data.msg}`)
+        //if (data.msg) {
+        console.log(`message recieved: ${data}`)
+
         function randNum() {
           let num = Math.random().toString(36).substr(2)
           console.log(`id: ${num}`)
           socket.emit('new id', num)
           return num
         }
-        $("#messages").append($("<li>").css("background", data.color).attr('id', randNum()).text(data.msg));
+        $("#messages").append($("<li>").css("background-color", data.color).attr('id', data.id).text(
+          `${data.usr}: ${data.msg}`));
+        document.getElementById(data.id).scrollIntoView()
+        //}
       });
 
-      socket.on('load', (loadData) => {
-        console.log('Socket.io connection to server confirmed')
-        loadData = loadData; // internal data = external parameter
-        let assignedColor = loadData.color;
-      })
 
-      socket.on('scroll', id => {
-        document.getElementById(id).scrollIntoView()
-      });
 
       $('#m').on('focus', function () {
-        document.getElementById(m).scrollIntoView()
+        document.getElementById('m').scrollIntoView()
       });
 
-      $('input').bind('focus');
       socket.on('force disconnect', () => {
         socket.disconnect()
       })
