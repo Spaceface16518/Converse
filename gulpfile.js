@@ -11,4 +11,7 @@ gulp.task("default", () => {
   log("Moving Socket.IO");
   gulp.src("./src/external/socket.io/socket.io.js").pipe(gulp.dest("./lib"));
   gulp.src("./src/source/server.js").pipe(gulp.dest("./lib"));
+
+  log('Moving favicons');
+  gulp.src('./src/source/assets/pics/*').pipe(gulp.dest('./lib'))
 });
