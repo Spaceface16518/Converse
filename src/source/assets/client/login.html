@@ -15,7 +15,7 @@
       $('body').css('background-color', '#607d8b')
       $('#chat').focus(() => {
         $('#note').css('display', 'block')
-        let str = Math.random().toString(36).slice(2)
+        let str = Math.random().toString(36).slice(2).slice(0, 6)
         $('#chat').val(str)
         console.log(str)
       })

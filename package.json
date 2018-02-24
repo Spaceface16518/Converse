@@ -3,7 +3,8 @@
   "version": "2.5.13",
   "description": "A web chat app",
   "repository": {
-    "heroku": "https://git.heroku.com/converse2.git"
+    "heroku": "https://git.heroku.com/converse2.git",
+    "git": "https://github.com/Spaceface16518/Converse.git"
   },
   "main": "lib/server.js",
   "engines": {
