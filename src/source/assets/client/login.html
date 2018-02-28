@@ -31,8 +31,8 @@
         console.log('processInput called');
 
         query = {
-          usr: $('#usr').val().replace(/\s/g, "+"),
-          chat: $('#chat').val().replace(/\s/g, "+")
+          usr: encodeURIComponent($('#usr').val()),
+          chat: encodeURIComponent($('#chat').val())
         }
         if (!query.chat) {
           $("#warning").css('display', 'block')
