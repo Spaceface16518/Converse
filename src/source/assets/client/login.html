@@ -23,19 +23,24 @@
       $('form').submit(() => {
         let currentLocation = window.location;
         let queryParams = processInput()
-        window.location.replace(`${currentLocation}chat${queryParams}`)
-        return false
+        if (queryParams) {
+          window.location.replace(`${currentLocation}chat${queryParams}`)
+          return false
+        } else {
+          return false
+        }
       })
 
       function processInput() {
         console.log('processInput called');
 
         query = {
-          usr: $('#usr').val().replace(/\s/g, "+"),
-          chat: $('#chat').val().replace(/\s/g, "+")
+          usr: encodeURIComponent($('#usr').val()),
+          chat: encodeURIComponent($('#chat').val())
         }
         if (!query.chat) {
           $("#warning").css('display', 'block')
+          return false
         } else {
           //setCookies(query)
           let queryString = `?usr=${query.usr}&chat=${query.chat}`
@@ -76,6 +81,9 @@
         </div>
         <div id="note" class="w3-container w3-panel w3-pale-blue w3-leftbar w3-border-blue">
           <p>To create a new chat, use the default chat ID provided</p>
+        </div>
+        <div id="warning" class="w3-container w3-panel w3-pale-red w3-leftbar w3-border-blue">
+          <p>Please enter a Display name and Chat ID</p>
         </div>
         <button type="submit" id="submit" class="w3-btn w3-blue w3-margin">Converse!</button>
       </form>
