@@ -17,23 +17,13 @@ app.get("/chat", (req, res) => {
   loadData.color = require("randomcolor")();
 });
 app.get("/favicon", (req, res) => {
-  res.sendFile(__dirname + "/custom.png");
+  res.sendFile(__dirname + "/favicon/custom.png");
 });
 
 io.on("connection", socket => {
   socket.emit("load", loadData); // Onload functions
   socket.join(loadData.chat);
   loadData = {};
-  io.to("alien5").emit("message", {
-    id: Math.random()
-      .toString(36)
-      .slice(2),
-    msg: "Testing, testing; this thing on?",
-    usr: "alien",
-    chat: "alien5",
-    color: "#f49842",
-    time: new Date()
-  });
 
   // TODO: Load chat history on init, with mongoDB
   socket.on("message", data => {
