@@ -23,8 +23,12 @@
       $('form').submit(() => {
         let currentLocation = window.location;
         let queryParams = processInput()
-        window.location.replace(`${currentLocation}chat${queryParams}`)
-        return false
+        if (queryParams) {
+          window.location.replace(`${currentLocation}chat${queryParams}`)
+          return false
+        } else {
+          return false
+        }
       })
 
       function processInput() {
@@ -36,6 +40,7 @@
         }
         if (!query.chat) {
           $("#warning").css('display', 'block')
+          return false
         } else {
           //setCookies(query)
           let queryString = `?usr=${query.usr}&chat=${query.chat}`
