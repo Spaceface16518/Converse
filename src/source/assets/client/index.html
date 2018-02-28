@@ -33,9 +33,17 @@
         console.info(loadData)
         $('#header-usr').text(`Display Name: ${loadData.usr}`)
         $('#header-chat').text(`Chat: ${loadData.chat}`)
+        let lastId;
+        loadData.history.forEach(msgData => {
+          $("#messages").append($("<li>").css("background-color", msgData.color).attr("id", msgData.id).addClass(
+            "w3-section w3-card-2").text(`${msgData.usr}: ${msgData.msg}`));
+          lastId = msgData.id;
+        });
+        document.getElementById(lastId).scrollIntoView();
       })
 
       $('.msgq').css('margin-bottom', $('form').height())
+
 
       $("form").submit(function () {
         let obj = {
@@ -113,7 +121,8 @@
             });
           });
         </script>
-        <input type="text" class="w3-input w3-leftbar w3-border-bottom w3-border-blue" placeholder="Converse..." id="m" oninput="return false" onpaste="return false">
+        <input type="text" class="w3-input w3-leftbar w3-border-bottom w3-border-blue" placeholder="Converse..." id="m" oninput="return false"
+          onpaste="return false">
       </div>
       <div class="w3-container w3-rest">
         <button type="submit" class="w3-button w3-blue w3-border w3-cell w3-rest w3-hide-large">Send</button>
