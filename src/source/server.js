@@ -2,9 +2,37 @@
 // IMPORTS -------------
 
 // MONGODB
-const stitch = require("mongodb-stitch")
-let stitchClient;
-initApplication()
+const stitch = require("mongodb-stitch");
+let db;
+const clientPromise = stitch.StitchClientFactory.create("converse-pnxkb");
+clientPromise.then(client => {
+  db = client.service("mongodb", "mongodb-atlas").db("Chats");
+  client
+    .login()
+    .then(() =>
+      db
+        .collection("Open")
+        .updateOne(
+          { owner_id: client.authedId() },
+          { $set: { number: 42 } },
+          { upsert: true }
+        )
+    )
+    .then(() =>
+      db
+        .collection("Open")
+        .find({})
+        .limit(100)
+        .execute()
+    )
+    .then(docs => {
+      console.log("Found docs", docs);
+      console.log("[MongoDB Stitch] Connected to Stitch");
+    })
+    .catch(err => {
+      console.error(err);
+    });
+});
 
 // SERVER
 var app = require("express")();
@@ -25,7 +53,7 @@ app.get("/chat", (req, res) => {
   res.sendFile(__dirname + "/index.html");
   loadData.usr = req.query.usr;
   loadData.chat = req.query.chat;
-  loadData.history = getAllInChat(loadData.chat)
+  loadData.history = getAllInChat(loadData.chat);
   loadData.color = require("randomcolor")();
 });
 app.get("/favicon", (req, res) => {
@@ -34,49 +62,63 @@ app.get("/favicon", (req, res) => {
 
 // EVENT HANDLERS ------------
 io.on("connection", socket => {
-  socket.emit("load", loadData); // Onload functions
+  console.log("Client connected");
+  console.log(`Sending load data: ${loadData.usr}`);
   socket.join(loadData.chat);
+  socket.emit("load", loadData); // Onload functions
+  console.log("loadData send");
   loadData = {};
 
   socket.on("message", data => {
+    console.log(`message recived: ${data.msg}`);
     io.emit("message", data); // When recive message from client, broadcast that message
-    enterToMongo(data)
+    enterToMongo(data);
+  });
+  io.on("disconnect", () => {
+    console.log("Client disconnected");
   });
 });
 
 // CLASSES
 class MessageEncode {
   // INIT
-  encoded = {};
 
   // CONSTRUCTOR
   constructor(raw) {
+    this.encoded = {};
+    this.owner_id = clientPromise.then(client => {
+      return client.authedId();
+    });
+    this.encoded.head = {};
     this.encoded.head.type = "Message";
     this.encoded.head.chat = raw.chat;
+    this.encoded.body = {};
     this.encoded.body.usr = raw.usr;
     this.encoded.body.msg = raw.msg;
+    this.encoded.meta = {};
     this.encoded.meta.color = raw.color;
     this.encoded.expedite = false;
     this.encoded.timestamp = raw.time;
   }
 
   // METHODS
+
   send() {
-    stitchClient.executeFunction('add', this.encoded)
+    db.collection("Open").insertOne(this.encoded);
   }
 }
 
 class MessageDecode {
   // INIT
-  decoded = {};
 
   // CONSTRUCTOR
-  constructor(encoded) {
-    this.decoded.chat = encoded.head.chat;
-    this.decoded.usr = encoded.body.usr;
-    this.decoded.msg = encoded.body.msg;
-    this.decoded.color = encoded.meta.color;
-    this.decoded.time = encoded.timestamp;
+  constructor(incoming) {
+    this.encoded = JSON.parse(incoming);
+    this.decoded.chat = this.encoded.head.chat;
+    this.decoded.usr = this.encoded.body.usr;
+    this.decoded.msg = this.encoded.body.msg;
+    this.decoded.color = this.encoded.meta.color;
+    this.decoded.time = this.encoded.timestamp;
   }
 
   // METHODS
@@ -85,13 +127,19 @@ class MessageDecode {
   }
 }
 
-
 // FUNCTIONS
-function initApplication() {
-  return stitch.StitchClientFactory.create('converse-pnxkb').then(client => {
-    stitchClient = client;
-  })
-}
+
+/*function initApplication() {
+  stitchClientPromise.then(stitchClient => {
+    const db = stitchClient.service("mongodb", "mongodb-atlas").db("Chats");
+    stitchClient
+      .login()
+      .then(stitchClient => {
+        console.log("logged in as: " + stitchClient.authedId());
+      })
+      .catch(e => console.log("error: " + e));
+  });
+}*/
 
 function enterToMongo(data) {
   let parser = new MessageEncode(data);
@@ -100,12 +148,11 @@ function enterToMongo(data) {
 
 function getAllInChat(chat) {
   let parsedDocs = [];
-  let docs = stitchClient.executeFunction('getAll', chat);
-  docs.foreach(element => {
+  let findDocs = db.collection("Open").find({chat: chat});
+  let docs = Array.from(findDocs);
+  docs.forEach(element => {
     let parser = new MessageDecode(element);
     parsedDocs.push(parser.getDecoded);
-  })
+  });
   return parsedDocs;
 }
-
-
