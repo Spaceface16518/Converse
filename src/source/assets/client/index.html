@@ -32,10 +32,10 @@
       socket.on('load', data => {
         console.log('Socket.io connection to server confirmed')
         loadData = data;
-        console.info('Load Data: ' + loadData)
+        console.log('Load Data: ' + loadData)
         $('#header-usr').text(`Display Name: ${loadData.usr}`)
         $('#header-chat').text(`Chat: ${loadData.chat}`)
-        /*let lastId;
+        let lastId;
         loadData.history.forEach(msgData => {
           $("#messages").append($("<li>").css("background-color", msgData.color).attr("id", msgData.id).addClass(
             "w3-section w3-card-2").text(`${msgData.usr}: ${msgData.msg}`));
@@ -43,58 +43,57 @@
         });
         document.getElementById(lastId).scrollIntoView();
         return false
-      })*/
-
-        $('.msgq').css('margin-bottom', $('form').height())
-
-
-        $("form").submit(function () {
-          let obj = {
-            id: Math.random().toString(36).slice(2),
-            msg: $("#m").val(),
-            usr: loadData.usr,
-            chat: loadData.chat,
-            color: loadData.color,
-            time: new Date()
-          };
-          if (obj.msg) {
-            socket.emit("message", obj)
-            console.log(`message sent: ${obj}`)
-            $("#m").val("");
-            return false;
-          } else {
-            return false
-          }
-        });
-
-        socket.on("message", function (data) {
-          //if (data.msg) {
-          console.log(`message recieved: ${data}`)
-
-          function randNum() {
-            let num = Math.random().toString(36).substr(2)
-            console.log(`id: ${num}`)
-            socket.emit('new id', num)
-            return num
-          }
-          $("#messages").append($("<li>").css("background-color", data.color).attr('id', data.id).addClass(
-            ' w3-section w3-card-2').text(
-            `${data.usr}: ${data.msg}`));
-          document.getElementById(data.id).scrollIntoView()
-          //}
-        });
-
-
-
-        $('#m').on('focus', function () {
-          document.getElementById('m').scrollIntoView()
-        });
-
-        socket.on('force disconnect', () => {
-          socket.disconnect()
-        })
       })
-    });
+
+      $('.msgq').css('margin-bottom', $('form').height())
+
+
+      $("form").submit(function () {
+        let obj = {
+          id: Math.random().toString(36).slice(2),
+          msg: $("#m").val(),
+          usr: loadData.usr,
+          chat: loadData.chat,
+          color: loadData.color,
+          time: new Date()
+        };
+        if (obj.msg) {
+          socket.emit("message", obj)
+          console.log(`message sent: ${obj}`)
+          $("#m").val("");
+          return false;
+        } else {
+          return false
+        }
+      });
+
+      socket.on("message", function (data) {
+        //if (data.msg) {
+        console.log(`message recieved: ${data}`)
+
+        function randNum() {
+          let num = Math.random().toString(36).substr(2)
+          console.log(`id: ${num}`)
+          socket.emit('new id', num)
+          return num
+        }
+        $("#messages").append($("<li>").css("background-color", data.color).attr('id', data.id).addClass(
+          ' w3-section w3-card-2').text(
+          `${data.usr}: ${data.msg}`));
+        document.getElementById(data.id).scrollIntoView()
+        //}
+      });
+
+
+
+      $('#m').on('focus', function () {
+        document.getElementById('m').scrollIntoView()
+      });
+
+      socket.on('force disconnect', () => {
+        socket.disconnect()
+      })
+    })
   </script>
 
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">

@@ -5,6 +5,7 @@
 const stitch = require("mongodb-stitch");
 let db;
 const clientPromise = stitch.StitchClientFactory.create("converse-pnxkb");
+let clientID;
 clientPromise.then(client => {
   db = client.service("mongodb", "mongodb-atlas").db("Chats");
   client
@@ -14,7 +15,7 @@ clientPromise.then(client => {
         .collection("Open")
         .updateOne(
           { owner_id: client.authedId() },
-          { $set: { number: 42 } },
+          { $set: { number: 42, time: new Date() } },
           { upsert: true }
         )
     )
@@ -29,10 +30,15 @@ clientPromise.then(client => {
       console.log("Found docs", docs);
       console.log("[MongoDB Stitch] Connected to Stitch");
     })
+    .then(() => {
+      console.log(client.authedId());
+      clientID = client.authedId();
+    })
     .catch(err => {
       console.error(err);
     });
 });
+console.log(clientID);
 
 // SERVER
 var app = require("express")();
@@ -86,9 +92,7 @@ class MessageEncode {
   // CONSTRUCTOR
   constructor(raw) {
     this.encoded = {};
-    this.owner_id = clientPromise.then(client => {
-      return client.authedId();
-    });
+    this.encoded.owner_id = undefined;
     this.encoded.head = {};
     this.encoded.head.type = "Message";
     this.encoded.head.chat = raw.chat;
@@ -104,10 +108,16 @@ class MessageEncode {
   // METHODS
 
   send() {
-    db.collection("Open").insertOne(this.encoded);
+    console.log("Send function triggered");
+    clientPromise.then(client => {
+      this.encoded.owner_id = client.authedId();
+      console.log(this.encoded.owner_id)
+      client.executeFunction("add", this.encoded).catch(err => {
+        throw err;
+      });
+    });
   }
 }
-
 class MessageDecode {
   // INIT
 
@@ -148,11 +158,17 @@ function enterToMongo(data) {
 
 function getAllInChat(chat) {
   let parsedDocs = [];
-  let findDocs = db.collection("Open").find({chat: chat});
-  let docs = Array.from(findDocs);
-  docs.forEach(element => {
-    let parser = new MessageDecode(element);
-    parsedDocs.push(parser.getDecoded);
+  let findDocs = clientPromise.then(client => {
+    client.executeFunction("getAll", chat).then(result => {
+      if (typeof result === "array" || typeof result === "object") {
+        Array.from(result).forEach(element => {
+          let parser = new MessageDecode(element);
+          parsedDocs.push(parser.getDecoded());
+        });
+        return parsedDocs;
+      } else {
+        throw "getAll did not return an valid value: " + result;
+      }
+    });
   });
-  return parsedDocs;
 }
