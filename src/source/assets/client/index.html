@@ -59,11 +59,11 @@
         };
         if (obj.msg) {
           socket.emit("message", obj)
-          console.log(`message sent: ${obj}`)
+          console.log(`message sent: ${obj.msg}`)
           $("#m").val("");
           return false;
         } else {
-          return false
+          return false;
         }
       });
 

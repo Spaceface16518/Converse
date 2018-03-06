@@ -38,7 +38,6 @@ clientPromise.then(client => {
       console.error(err);
     });
 });
-console.log(clientID);
 
 // SERVER
 var app = require("express")();
@@ -77,7 +76,7 @@ io.on("connection", socket => {
 
   socket.on("message", data => {
     console.log(`message recived: ${data.msg}`);
-    io.emit("message", data); // When recive message from client, broadcast that message
+    io.in(data.chat).emit("message", data); // When recive message from client, broadcast that message
     enterToMongo(data);
   });
   io.on("disconnect", () => {
@@ -111,7 +110,7 @@ class MessageEncode {
     console.log("Send function triggered");
     clientPromise.then(client => {
       this.encoded.owner_id = client.authedId();
-      console.log(this.encoded.owner_id)
+      console.log(this.encoded.owner_id);
       client.executeFunction("add", this.encoded).catch(err => {
         throw err;
       });
@@ -138,18 +137,6 @@ class MessageDecode {
 }
 
 // FUNCTIONS
-
-/*function initApplication() {
-  stitchClientPromise.then(stitchClient => {
-    const db = stitchClient.service("mongodb", "mongodb-atlas").db("Chats");
-    stitchClient
-      .login()
-      .then(stitchClient => {
-        console.log("logged in as: " + stitchClient.authedId());
-      })
-      .catch(e => console.log("error: " + e));
-  });
-}*/
 
 function enterToMongo(data) {
   let parser = new MessageEncode(data);
