@@ -4,7 +4,7 @@
 // MONGODB
 const stitch = require("mongodb-stitch");
 let db;
-const clientPromise = stitch.StitchClientFactory.create("converse-pnxkb");
+const clientPromise = stitch.StitchClientFactory.create(process.env.APP_ID);
 let clientID;
 clientPromise.then(client => {
   db = client.service("mongodb", "mongodb-atlas").db("Chats");
