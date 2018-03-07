@@ -16,7 +16,8 @@
   },
   "scripts": {
     "test": "node src/source/app.js",
-    "start": "npm run-script gulp ; npm run-script launch",
+    "start": "npm run build && npm run launch",
+    "build": "npm install && npm run gulp",
     "gulp": "gulp default",
     "launch": "node lib/server.js"
   },
