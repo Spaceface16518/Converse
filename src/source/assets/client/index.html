@@ -16,26 +16,37 @@
     }
   </style>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js" type="text/javascript"></script>
+  <script src="socket.io/socket.io.js" type="text/javascript"></script>
+
   <script>
     $(function () {
-
 
       console.log('Connected to JQuery')
       localStorage.debug = '*'
       let socket = io(window.location.host);
       $('input').bind('focus');
-      console.log(`Connected to Socket.io on ${window.location.host}`)
-      let loadData = {}
+      console.log(`Connected to Socket.io on ${window.location.hostname}`)
 
+
+      let loadData = {}
       socket.on('load', data => {
         console.log('Socket.io connection to server confirmed')
         loadData = data;
-        console.info(loadData)
+        console.log('Load Data: ' + loadData)
         $('#header-usr').text(`Display Name: ${loadData.usr}`)
         $('#header-chat').text(`Chat: ${loadData.chat}`)
+        let lastId;
+        loadData.history.forEach(msgData => {
+          $("#messages").append($("<li>").css("background-color", msgData.color).attr("id", msgData.id).addClass(
+            "w3-section w3-card-2").text(`${msgData.usr}: ${msgData.msg}`));
+          lastId = msgData.id;
+        });
+        document.getElementById(lastId).scrollIntoView();
+        return false
       })
 
       $('.msgq').css('margin-bottom', $('form').height())
+
 
       $("form").submit(function () {
         let obj = {
@@ -48,11 +59,11 @@
         };
         if (obj.msg) {
           socket.emit("message", obj)
-          console.log(`message sent: ${obj}\ncolor: ${obj.color}`)
+          console.log(`message sent: ${obj.msg}`)
           $("#m").val("");
           return false;
         } else {
-          return false
+          return false;
         }
       });
 
@@ -85,7 +96,6 @@
     })
   </script>
 
-  <script src="socket.io/socket.io.js" type="text/javascript"></script>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="shortcut icon" href="favicon" type="image/x-icon">
 </head>
@@ -113,7 +123,8 @@
             });
           });
         </script>
-        <input type="text" class="w3-input w3-leftbar w3-border-bottom w3-border-blue" placeholder="Converse..." id="m" oninput="return false" onpaste="return false">
+        <input type="text" class="w3-input w3-leftbar w3-border-bottom w3-border-blue" placeholder="Converse..." id="m" oninput="return false"
+          onpaste="return false">
       </div>
       <div class="w3-container w3-rest">
         <button type="submit" class="w3-button w3-blue w3-border w3-cell w3-rest w3-hide-large">Send</button>

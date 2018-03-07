@@ -1,6 +1,6 @@
 {
   "name": "converse2",
-  "version": "2.8.5",
+  "version": "2.9.27",
   "description": "A web chat app",
   "repository": {
     "heroku": "https://git.heroku.com/converse2.git",
@@ -30,6 +30,7 @@
     "gulp-replace-name": "^1.0.1",
     "gulp-uglify": "^3.0.0",
     "http": "0.0.0",
+    "mongodb-stitch": "^3.0.5",
     "randomcolor": "^0.5.3",
     "socket.io": "^2.0.4"
   }
