@@ -8,17 +8,15 @@ const clientPromise = stitch.StitchClientFactory.create(process.env.APP_ID);
 let clientID;
 clientPromise.then(client => {
   db = client.service("mongodb", "mongodb-atlas").db("Chats");
-  client
-    .login()
-    .then(() =>
-      db
-        .collection("Open")
-        .updateOne(
-          { owner_id: client.authedId() },
-          { $set: { number: 42, time: new Date() } },
-          { upsert: true }
-        )
-    )
+  client.authenticate("anon")
+  .then( authedUserId => {
+      console.log("logged in anonymously as user", authedUserId);
+  })
+  .catch( err => {
+      console.error("failed to log in anonymously:", err);
+  });
+})
+  /*
     .then(() =>
       db
         .collection("Open")
@@ -37,7 +35,7 @@ clientPromise.then(client => {
     .catch(err => {
       console.error(err);
     });
-});
+});*/
 
 // SERVER
 var app = require("express")();
