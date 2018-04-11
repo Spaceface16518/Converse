@@ -7,7 +7,7 @@
   <meta name="keywords" content="Converse, web, chat">
   <meta name="author" content="Amrit Rathie">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Converse | unblocked web chat!</title>
+  <title>Converse 2| Chat</title>
   <style>
     form {
       position: fixed;
@@ -33,6 +33,7 @@
         console.info(loadData)
         $('#header-usr').text(`Display Name: ${loadData.usr}`)
         $('#header-chat').text(`Chat: ${loadData.chat}`)
+        $("title").text(`${loadData.chat} | Converse 2`)
       })
 
       $('.msgq').css('margin-bottom', $('form').height())
