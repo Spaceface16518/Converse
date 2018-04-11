@@ -23,7 +23,7 @@
 
       console.log('Connected to JQuery')
       localStorage.debug = '*'
-      let socket = io(window.location.host);
+      let socket = io({transports: ['websocket'], upgrade: false});
       $('input').bind('focus');
       console.log(`Connected to Socket.io on ${window.location.hostname}`)
 
@@ -41,7 +41,7 @@
             "w3-section w3-card-2").text(`${msgData.usr}: ${msgData.msg}`));
           lastId = msgData.id;
         });
-        document.getElementById(lastId).scrollIntoView();
+        $(":last-child")[0].scrollIntoView();
         return false
       })
 

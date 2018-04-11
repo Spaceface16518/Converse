@@ -1,10 +1,11 @@
 //const modules = require('./assets/module-router.js')
 // IMPORTS -------------
-
+require('dotenv').config()
 // MONGODB
 const stitch = require("mongodb-stitch");
 let db;
 const clientPromise = stitch.StitchClientFactory.create(process.env.APP_ID);
+console.log(process.env.APP_ID)
 let clientID;
 clientPromise.then(client => {
   db = client.service("mongodb", "mongodb-atlas").db("Chats");
@@ -56,7 +57,7 @@ app.get("/chat", (req, res) => {
   res.sendFile(__dirname + "/index.html");
   loadData.usr = req.query.usr;
   loadData.chat = req.query.chat;
-  loadData.history = getAllInChat(loadData.chat);
+  loadData.history = getAllInChat(req.query.chat);
   loadData.color = require("randomcolor")();
 });
 app.get("/favicon", (req, res) => {
@@ -142,18 +143,20 @@ function enterToMongo(data) {
 }
 
 function getAllInChat(chat) {
+  let result;
   let parsedDocs = [];
   let findDocs = clientPromise.then(client => {
+    // BUG: UnhandledPromiseRejectionWarning: SyntaxError: Unexpected token o in JSON at position 1
     client.executeFunction("getAll", chat).then(result => {
       if (typeof result === "array" || typeof result === "object") {
         Array.from(result).forEach(element => {
           let parser = new MessageDecode(element);
           parsedDocs.push(parser.getDecoded());
         });
-        return parsedDocs;
       } else {
         throw "getAll did not return an valid value: " + result;
       }
     });
   });
+  return parsedDocs;
 }
