@@ -4,15 +4,18 @@ require("dotenv").config();
 // MONGODB
 const stitch = require("mongodb-stitch");
 let db;
+let appdata;
 const clientPromise = stitch.StitchClientFactory.create(process.env.APP_ID);
 console.log(process.env.APP_ID);
 let clientID;
 clientPromise.then(client => {
   db = client.service("mongodb", "mongodb-atlas").db("Chats");
+  appdata = client.service("mongodb", "mongodb-atlas").db("Appdata");
   client
     .login()
     .then(authedUserId => {
       console.log("logged in anonymously as user", authedUserId);
+      clientID = authedUserId;
     })
     .catch(err => {
       console.error("failed to log in anonymously:", err);
@@ -52,6 +55,15 @@ let loadData = {};
 // ROUTES ---------------
 app.get("/", function(req, res) {
   res.sendFile(__dirname + "/login.html");
+  clientPromise.then(client => {
+    client.executeFunction("log", {
+      ip: req.ip,
+      ips: req.ips,
+      socket: req.socket,
+      secure: req.secure,
+      reqbody: req.body
+    });
+  });
 });
 
 app.get("/chat", (req, res) => {
@@ -148,13 +160,17 @@ function getAllInChat(chat) {
   let findDocs = clientPromise.then(client => {
     // BUG: UnhandledPromiseRejectionWarning: SyntaxError: Unexpected token o in JSON at position 1
     client.executeFunction("getAll", chat).then(result => {
-      if (typeof result === "array" || typeof result === "object") {
-        Array.from(result).forEach(element => {
-          let parser = new MessageDecode(element);
-          parsedDocs.push(parser.getDecoded());
-        });
+      if (!result) {
+        console.warn("getAll function returned non-truthy value");
       } else {
-        throw "getAll did not return an valid value: " + result;
+        if (typeof result === "array" || typeof result === "object") {
+          result.forEach(element => {
+            let parser = new MessageDecode(element);
+            parsedDocs.push(parser.getDecoded());
+          });
+        } else {
+          throw "getAll did not return an valid value: " + result;
+        }
       }
     });
   });
