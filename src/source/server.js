@@ -9,15 +9,16 @@ console.log(process.env.APP_ID);
 let clientID;
 clientPromise.then(client => {
   db = client.service("mongodb", "mongodb-atlas").db("Chats");
-  client.authenticate("anon")
-  .then( authedUserId => {
+  client
+    .login()
+    .then(authedUserId => {
       console.log("logged in anonymously as user", authedUserId);
-  })
-  .catch( err => {
+    })
+    .catch(err => {
       console.error("failed to log in anonymously:", err);
-  });
-})
-  /*
+    });
+});
+/*
     .then(() =>
       db
         .collection("Open")
