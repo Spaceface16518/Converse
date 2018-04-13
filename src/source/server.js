@@ -121,7 +121,7 @@ class MessageDecode {
 
   // CONSTRUCTOR
   constructor(incoming) {
-    this.encoded = JSON.parse(incoming);
+    this.encoded = incoming; // COMBAK: code needs cleanup after JSON.parse was removed
     this.decoded.chat = this.encoded.head.chat;
     this.decoded.usr = this.encoded.body.usr;
     this.decoded.msg = this.encoded.body.msg;
