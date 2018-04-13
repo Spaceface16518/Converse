@@ -1,11 +1,11 @@
 //const modules = require('./assets/module-router.js')
 // IMPORTS -------------
-require('dotenv').config()
+require("dotenv").config();
 // MONGODB
 const stitch = require("mongodb-stitch");
 let db;
 const clientPromise = stitch.StitchClientFactory.create(process.env.APP_ID);
-console.log(process.env.APP_ID)
+console.log(process.env.APP_ID);
 let clientID;
 clientPromise.then(client => {
   db = client.service("mongodb", "mongodb-atlas").db("Chats");
