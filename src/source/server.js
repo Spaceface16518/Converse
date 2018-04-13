@@ -143,7 +143,6 @@ function enterToMongo(data) {
 }
 
 function getAllInChat(chat) {
-  let result;
   let parsedDocs = [];
   let findDocs = clientPromise.then(client => {
     // BUG: UnhandledPromiseRejectionWarning: SyntaxError: Unexpected token o in JSON at position 1
