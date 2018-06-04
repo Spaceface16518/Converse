@@ -23,6 +23,9 @@
       console.log('Connected to JQuery')
       localStorage.debug = '*'
       let socket = io(window.location.host);
+      $('body').unload(() => {
+        socket.close();
+      })
       $('input').bind('focus');
       console.log(`Connected to Socket.io on ${window.location.host}`)
       let loadData = {}
