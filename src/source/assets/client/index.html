@@ -24,6 +24,9 @@
       localStorage.debug = '*'
       let socket = io(window.location.host);
       $('input').bind('focus');
+      $('window').on('onunload', () => {
+        socket.close();
+      })
       console.log(`Connected to Socket.io on ${window.location.host}`)
       let loadData = {}
 
